@@ -75,3 +75,29 @@ long_inaugural_words = sorted(long_inaugural_words)
 
 print(long_inaugural_words)
 
+# longest words with extra conditions - word length > 7 and word occurs more than 7 times
+inaugural_freqDist = nltk.FreqDist(inaugural_address_text)
+long_freq_inaugural_words = [word for word in inaugural_set if len(word) > 7 and inaugural_freqDist[word] > 7]
+print(sorted(long_freq_inaugural_words))
+
+# collocations - words that appear close together
+print(inaugural_address_text.collocations())
+print(monty_python_text.collocations())
+
+# count word lengths
+word_lengths = [len(word) for word in inaugural_set]
+print(word_lengths)
+
+fdist_word_lengths = nltk.FreqDist(len(word) for word in inaugural_address_text)
+print(fdist_word_lengths)
+fdist_word_lengths.plot(inaugural_address_len, cumulative=True)
+
+# use Pythonic operators to extract certain kinds of words
+print(sorted(word for word in inaugural_address_text if word.startswith('free')))
+print(sorted(word for word in genesis_text if word.endswith('ness')))
+print(sorted(word for word in monty_python_text if 'night' in word))
+
+print('\n')
+print(len(inaugural_address_text)) # certain amount of characters
+print(len(set(word.lower() for word in inaugural_address_text if word.isalpha()))) # characters, but eliminate case sensitivity + non-alphabet characters (numbers, punctuation)
+
