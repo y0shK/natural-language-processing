@@ -62,3 +62,75 @@ hp7_freqDist_longer = nltk.FreqDist(hp7_longer_words)
 hp7_freqDist_longer.plot(25, cumulative=True)
 hp7_freqDist_longer.plot(25, cumulative=False)
 
+# apply some techniques from Ch. 2 - accessing corpora and lexical resources
+houses = ['Gryffindor', 'Hufflepuff', 'Ravenclaw', 'Slytherin']
+house_concordance_list = []
+
+for house in houses:
+    house_concordance_amt = hp7.concordance(house)
+
+    house_concordance_list.append(house_concordance_amt)
+    print(house + ':', hp7.count(house))
+print(house_concordance_list)
+
+# split DH into two parts, access House mentions by part
+hp7_part1 = hp7[0:len(hp7)//2]
+hp7_part2 = hp7[len(hp7)//2:hp7_len]
+
+hp7_part1 = nltk.Text(hp7_part1) # convert to nltk.Text to use concordance()
+hp7_part2 = nltk.Text(hp7_part2)
+
+# for each Hogwarts House, search for its occurrence in text
+for house in houses:
+    house_concordance_part1 = hp7_part1.concordance(house)
+    house_concordance_part2 = hp7_part2.concordance(house)
+
+print('\n')
+
+# https://stackoverflow.com/questions/32676319/new-to-nltk-having-trouble-with-conditional-frequency
+# useful resource for freq and conditional freq distribution
+
+fDistHouses = nltk.FreqDist(tokens_hp7) # take list of substrings of HP text
+for word in fDistHouses:
+    if word in houses:
+        print('Frequency of', word, fDistHouses.freq(word))
+
+print("\n")
+
+interesting_words = ['Horcrux', 'Hallow', 'Dumbledore', 'love', 'Patronus', 'Ministry', 'Voldemort', 'Weasley', 'wand',
+                     'Snape', 'Crucio', 'Muggle', 'Harry']
+
+fDistInterestingWords = nltk.FreqDist(tokens_hp7)
+for word in fDistInterestingWords:
+    if word in interesting_words:
+        print('Frequency of', word, fDistInterestingWords.freq(word))
+
+print('\n')
+
+# some words have a large number of letters - unique in n-letter length
+# no point in using these unique n-letter lengths in a conditional distribution
+interesting_words.remove('Dumbledore')
+interesting_words.remove('Voldemort')
+
+conditional_freq_dist_interesting_words = nltk.ConditionalFreqDist()
+
+for word in tokens_hp7:
+    if word in interesting_words:
+        condition = len(word)
+        conditional_freq_dist_interesting_words[condition][word] += 1
+
+for condition in conditional_freq_dist_interesting_words:
+    for word in conditional_freq_dist_interesting_words[condition]:
+        print("Conditional frequency of", word, conditional_freq_dist_interesting_words[condition].freq(word), "condition = word length", condition)
+
+hp7_string_text = tokens_hp7
+list(nltk.bigrams(hp7_string_text))
+
+def generate_model(cfd, word):
+    for i in range(15):
+        print(word, end=' ')
+        word = cfd[word].max()
+
+bigrams = nltk.bigrams(hp7_string_text)
+cfd_bigrams = nltk.ConditionalFreqDist(bigrams)
+generate_model(cfd_bigrams, 'Horcrux')
