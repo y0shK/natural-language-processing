@@ -134,3 +134,23 @@ def generate_model(cfd, word):
 bigrams = nltk.bigrams(hp7_string_text)
 cfd_bigrams = nltk.ConditionalFreqDist(bigrams)
 generate_model(cfd_bigrams, 'Horcrux')
+
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+tokens_sentences_hp7 = nltk.sent_tokenize(raw_hp7)
+
+# remove specific substrings - https://stackoverflow.com/questions/37372603/how-to-remove-specific-substrings-from-a-set-of-strings-in-python
+
+# Vader explanation: https://stackoverflow.com/questions/40325980/how-is-the-vader-compound-polarity-score-calculated-in-python-nltk
+# Vader source code: https://github.com/nltk/nltk/blob/develop/nltk/sentiment/vader.py
+
+formatted_tokens_sentences_hp7 = [x.replace('\n', '') for x in tokens_sentences_hp7] # list comprehension to replace newline formatting
+print(formatted_tokens_sentences_hp7)
+
+# create instance for vader algorithm
+sent_analyzer = SentimentIntensityAnalyzer()
+
+for sent in formatted_tokens_sentences_hp7:
+    print(sent) # each sentence of the book, sentiment analysis performed on each by vader
+    polarity = sent_analyzer.polarity_scores(sent) # polarity_scores finds the overall "sentiment" by looking at all of the words and quantifying them
+    for k in sorted(polarity):
+        print('{0}: {1}, '.format(k, polarity[k]), '\n\n')
